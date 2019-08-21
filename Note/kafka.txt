@@ -1,0 +1,20 @@
+﻿#启动zookeeper:
+nohup  ./zookeeper-server-start.sh /graves/kafka_2.11-1.1.0/config/zookeeper.properties >/graves/zookeep.out 2>&1 &
+#启动kafka：
+nohup  ./kafka-server-start.sh /graves/kafka/kafka_2.11-1.1.0/config/server.properties >/graves/kafka.out 2>&1 &
+
+
+#查询 topic 为 ottTrace 接收到的消息：
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic ottTrace --from-beginning
+
+#创建一个名为test的topic，只有一个副本，一个分区。
+./kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+
+#通过list命令查看刚刚创建的topic
+./kafka-topics.sh -list -zookeeper localhost:2181
+
+#启动producer并发送消息启动producer
+./kafka-console-producer.sh --broker-list localhost:9092 --topic test
+
+#然后在另一个终端中，启动consumer
+./kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning

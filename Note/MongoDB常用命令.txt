@@ -1,0 +1,26 @@
+MongoDB 常用命令：
+
+查询 bookmark_collection 中 不同contentId 出现次数大于 50 次的用户 id 及 次数：
+db.bookmark_collection.aggregate(
+ [{"$group": {   "_id": {userId:"$userId",contentId:"$contentId"}  } },
+ {"$group": {   "_id": {userId:"$_id.userId"},	"count": {"$sum": 1} } },
+ { $project : {"_id": 0, "userId" : "$_id.userId", "count" : 1}},
+ {"$match": {"count": {"$gt": 1}}}
+ ],
+ {"allowDiskUse" : true}
+)
+
+
+needtodelete_collection 中根据 userId 去重 :
+db.needtodelete_collection.aggregate([{'$group':{
+                                    '_id':{'userId':'$userId'},
+                                    'uniqueIds':{'$addToSet':'$_id'},
+                                    'count':{'$sum':1}
+                            }},
+                            {'$match':{'count':{'$gt':1} 
+                            }}],
+                           {allowDiskUse:true}
+                        ).forEach(function(doc){
+                            doc.uniqueIds.shift();
+                            db.needtodelete_collection.remove({_id: {$in: doc.uniqueIds}});
+                        });
