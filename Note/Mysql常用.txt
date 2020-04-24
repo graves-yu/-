@@ -1,0 +1,10 @@
+-- 查询指定数据库中每张表的记录数
+SELECT
+	table_name,
+	table_rows
+FROM
+	information_schema. TABLES
+WHERE
+	TABLE_SCHEMA = 'cms3.1_ce'
+ORDER BY
+	table_rows DESC;
